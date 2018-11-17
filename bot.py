@@ -1,3 +1,3 @@
-#!/usr/bin/env python
+#! /usr/bin/env python
 
-print ("Hello! This GitHub test")
+print ('Hello!')
