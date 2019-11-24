@@ -2,8 +2,22 @@ import subprocess
  
 args = ["speedtest-cli"];
 
+/*
+perf['ping',
+*     'dist',
+*     'dspd',
+*     'uspd'];
+*/
+print ("SpeedTest started...");
+
 process = subprocess.Popen(args, stdout=subprocess.PIPE);
 
-data = process.communicate();
+output = process.communicate();
 
-print(data);
+
+for line in ta:
+
+    print(element);
+
+print ("Exit!");
+
