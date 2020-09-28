@@ -1,6 +1,6 @@
 import requests;
 
-url = 'https://api.telegram.org/bot303397280:AAH9ciWTZt2ZqG7qfJqshZqMUeKW89bRh1o/';
+url = 'https://api.telegram.org/';
 
 response = requests.get(url + 'getUpdates');
 
