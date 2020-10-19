@@ -1,6 +1,8 @@
 import requests;
+import conf;
 
-url = 'https://api.telegram.org/bot303397280:AAH9ciWTZt2ZqG7qfJqshZqMUeKW89bRh1o/';
+
+url = 'https://api.telegram.org/bot' + conf.token + '/';
 
 response = requests.get(url + 'getUpdates');
 
