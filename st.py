@@ -12,5 +12,5 @@ print(output);
 
 print(error);
 
-print ("Exit!");
+print ("Exit...");
 
