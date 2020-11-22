@@ -66,7 +66,7 @@ def ParseUpdate(response):
     
         http_code = 200;
     
-        print ("HTTP Code is 200"); # Debug logging to the console.
+        print ("HTTP Code is 200. Good connection..."); # Debug logging to the console.
         
         data = response.json();
         
