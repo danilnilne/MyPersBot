@@ -1,19 +1,19 @@
 import bot_conf;
 import os
-
+import datetime
 
 #CheckFile fuction checks provided path if it exist on the disk
 def CheckLogFile(path):
 
     if os.path.exists(path):
 
-        print('Такой путь существует: ', path);
+        print('Path exist: ', path);
 
         return(0);
 
     else:
 
-        print('Такого пути нет. Создаем...', path);
+        print('Path does not exist. Creating: ', path);
 
         path_parts = path.rpartition('/'); # 0: /home/pi/code/tmp/logs; 1: /; 2: bot.log;
 
@@ -43,7 +43,7 @@ def CheckLogFile(path):
 
                 print("Log File created.")
 
-
+                log_fd.close();
 
 #CheckFile END
 
@@ -64,10 +64,9 @@ def WriteLog (log_string):
 
     else:
 
-        print(log_file);
-        print(log_string);
-    #check if file exits or can be created
-    #check if file more than
+        log_fd.write(str(datetime.datetime.now()) + ' - ' + log_string + '\n');
+
+        log_fd.close();
 #WriteLog END
 
 #Main Body
