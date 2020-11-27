@@ -1,7 +1,7 @@
 import time
 import requests;
 import bot_conf;
-
+import dolog;
 
 token = bot_conf.token;
 
@@ -26,7 +26,7 @@ def SendMessage(token, update):
     #https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
     url = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&text=' + message;
 
-    print(url);
+    dolog.WriteLog(url);
 
     #Send Message to the chat
     try:
@@ -35,7 +35,7 @@ def SendMessage(token, update):
 
     except:
 
-        print ("Problems with POST request during Send Message to the chat.");
+        dolog.WriteLog("Problems with POST request during Send Message to the chat.");
 
     else:
 
@@ -51,7 +51,7 @@ def SendMessage(token, update):
 
         except:
 
-            print ("Problems with POST request Mark Update as resolved.");
+            dolog.WriteLog("Problems with POST request Mark Update as resolved.");
 
         else:
 
@@ -76,7 +76,7 @@ def ParseUpdate(response):
 
         except:
 
-            print ("No updates. Continue GetUpdates");
+            dolog.WriteLog("No updates. Continue GetUpdates");
 
         else:
 
@@ -94,7 +94,7 @@ def ParseUpdate(response):
 
     else:
 
-        print("HTTP request hasn't code 200!");
+        dolog.WriteLog("HTTP request hasn't code 200!");
 
         exit(1);
 # ParseUpdate END

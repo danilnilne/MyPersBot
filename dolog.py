@@ -7,13 +7,13 @@ def CheckLogFile(path):
 
     if os.path.exists(path):
 
-        print('Path exist: ', path);
+        #print('Path exist: ', path);
 
         return(0);
 
     else:
 
-        print('Path does not exist. Creating: ', path);
+        #print('Path does not exist. Creating: ', path);
 
         path_parts = path.rpartition('/'); # 0: /home/pi/code/tmp/logs; 1: /; 2: bot.log;
 
@@ -41,7 +41,7 @@ def CheckLogFile(path):
 
             else:
 
-                print("Log File created.")
+                #print("Log File created.")
 
                 log_fd.close();
 
@@ -49,6 +49,8 @@ def CheckLogFile(path):
 
 #WriteLog fuction provide saving log_strings to the log file
 def WriteLog (log_string):
+
+    CheckLogFile(bot_conf.log_file);
 
     log_file = bot_conf.log_file;
 
@@ -71,7 +73,6 @@ def WriteLog (log_string):
 
 #Main Body
 
-CheckLogFile(bot_conf.log_file);
+#WriteLog("Hello!");
 
-WriteLog("Hello!");
 #Main END;
