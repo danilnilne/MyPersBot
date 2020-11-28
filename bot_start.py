@@ -2,6 +2,7 @@ import time
 import requests;
 import bot_conf;
 import dolog;
+import json
 
 token = bot_conf.token;
 
@@ -86,11 +87,7 @@ def ParseUpdate(response):
 
                 ParseCommand(update);
 
-#                print('=====================')
-#                print ("The Update: ", update['update_id']);
-#                print ("The Message: ", update['message']);
-#                print ("The Message.Chat.ID: ", update['message']['chat']['id']);
-#                print ("The Message.Chat.ID.Text: ", update['message']['text']);
+                dolog.WriteLog('func ParseUpdate - ' + json.dumps(update, indent=2));
 
     else:
 
@@ -102,12 +99,9 @@ def ParseUpdate(response):
 ### ParseCommand function. This fucntion unparse values from the GetUpdate response.
 def ParseCommand(update):
 
-#     print ('*=====================*')
-#     print ("The Update: ", update['update_id']);
-#     print ("The Message: ", update['message']);
-#     print ("The Message.Chat.ID: ", update['message']['chat']['id']);
-#     print ("The Message.Chat.ID.Text: ", update['message']['text']);
-     SendMessage(token, update)
+    dolog.WriteLog('func ParseCommand - ' + json.dumps(update, indent=2));
+
+    SendMessage(token, update)
 # ParseUpdate END
 
 ### Main

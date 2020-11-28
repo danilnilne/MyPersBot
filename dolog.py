@@ -17,33 +17,39 @@ def CheckLogFile(path):
 
         path_parts = path.rpartition('/'); # 0: /home/pi/code/tmp/logs; 1: /; 2: bot.log;
 
-        try:
+        if os.path.exists(path_parts[0]):
 
-            os.mkdir(path_parts[0]);
-
-        except:
-
-            print("Unable to create dir for log file");
-
-            exit(1);
+            print("Directory exists", path_parts[0]);
 
         else:
 
             try:
 
-                log_fd = open(path, "a+");
+                os.mkdir(path_parts[0]);
 
             except:
 
-                print("Unable to create log file.");
+                print("Unable to create dir for log file", path_parts[0]);
 
                 exit(1);
 
             else:
 
-                #print("Log File created.")
+                try:
 
-                log_fd.close();
+                    log_fd = open(path, "a+");
+
+                except:
+
+                    print("Unable to create log file.");
+
+                    exit(1);
+
+                else:
+
+                    #print("Log File created.")
+
+                    log_fd.close();
 
 #CheckFile END
 
