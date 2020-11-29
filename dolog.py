@@ -13,13 +13,33 @@ def CheckLogFile(path):
 
     else:
 
-        #print('Path does not exist. Creating: ', path);
+        print('Path does not exist. Creating: ', path);
 
         path_parts = path.rpartition('/'); # 0: /home/pi/code/tmp/logs; 1: /; 2: bot.log;
 
         if os.path.exists(path_parts[0]):
 
-            print("Directory exists", path_parts[0]);
+            print("Directory exists ", path_parts[0] + '. Creating Log File', path_parts[2]);
+
+            try:
+
+                log_fd = open(path, "a+");
+
+            except:
+
+                print("Unable to create Log File ", path);
+
+                exit(1);
+
+            else:
+
+                print("Log File created.");
+
+                log_fd = open(path, "a+");
+
+                log_fd.write(str(datetime.datetime.now()) + ' - ' + 'Log File created' + '\n');
+
+                log_fd.close();
 
         else:
 
@@ -29,7 +49,7 @@ def CheckLogFile(path):
 
             except:
 
-                print("Unable to create dir for log file", path_parts[0]);
+                print("Unable to create parent dir for Log File ", path_parts[0]);
 
                 exit(1);
 
@@ -41,13 +61,17 @@ def CheckLogFile(path):
 
                 except:
 
-                    print("Unable to create log file.");
+                    print("Unable to create Log File ", path);
 
                     exit(1);
 
                 else:
 
-                    #print("Log File created.")
+                    print("Log File created.");
+
+                    log_fd = open(path, "a+");
+
+                    log_fd.write(str(datetime.datetime.now()) + ' - ' + 'Log File created' + '\n');
 
                     log_fd.close();
 
@@ -66,7 +90,7 @@ def WriteLog (log_string):
 
     except :
 
-        print("Unable to operate with log file");
+        print("Unable to operate with Log File ", log_file);
 
         return (1);
 
