@@ -27,7 +27,7 @@ def SendMessage(token, update):
     #https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
     url = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&text=' + message;
 
-    dolog.WriteLog(url);
+    dolog.WriteLog(SendMessage.__name__ + ' - ' + url);
 
     #Send Message to the chat
     try:
@@ -36,7 +36,7 @@ def SendMessage(token, update):
 
     except:
 
-        dolog.WriteLog("Problems with POST request during Send Message to the chat.");
+        dolog.WriteLog(SendMessage.__name__ + ' - ' + 'Problems with POST request during Send Message to the chat.');
 
     else:
 
@@ -52,7 +52,7 @@ def SendMessage(token, update):
 
         except:
 
-            dolog.WriteLog("Problems with POST request Mark Update as resolved.");
+            dolog.WriteLog(SendMessage.__name__ + ' - ' + 'Problems with POST request Mark Update as resolved.');
 
         else:
 
@@ -77,7 +77,7 @@ def ParseUpdate(response):
 
         except:
 
-            dolog.WriteLog("No updates. Continue GetUpdates");
+            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'No updates. Continue GetUpdates');
 
         else:
 
@@ -87,11 +87,11 @@ def ParseUpdate(response):
 
                 ParseCommand(update);
 
-                dolog.WriteLog('func ParseUpdate - ' + json.dumps(update, indent=2));
+                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(update, indent=2));
 
     else:
 
-        dolog.WriteLog("HTTP request hasn't code 200!");
+        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "HTTP request hasn't code 200!");
 
         exit(1);
 # ParseUpdate END
@@ -99,7 +99,7 @@ def ParseUpdate(response):
 ### ParseCommand function. This fucntion unparse values from the GetUpdate response.
 def ParseCommand(update):
 
-    dolog.WriteLog('func ParseCommand - ' + json.dumps(update, indent=2));
+    dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
 
     SendMessage(token, update)
 # ParseUpdate END
