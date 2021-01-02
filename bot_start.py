@@ -5,38 +5,47 @@ import dolog;
 import json
 
 token = bot_conf.token;
+http_timeout = bot_conf.http_timeout;
+http_timeout_read = bot_conf.http_timeout_read;
 
 ### GetUpdate function. This fucntion request updates from TAPI.
 def GetUpdate(token):
 
     url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates';
 
-    response = requests.get(url);
+    try:
 
-    return response;
+        response = requests.get(url, timeout=(http_timeout, http_timeout_read));
+
+    except requests.exceptions.RequestException as e:
+
+        dolog.WriteLog(GetUpdate.__name__ + ' - ' + str(e));
+
+    else:
+
+        return response;
 # GetUpdate END
 
 ### SendMessage function. This fucntion sends data to the chat using TAPI.
 def SendMessage(token, update):
 
-
     chat_id = str(update['message']['chat']['id']);
 
-    message = str(update['message']['text']);
+    bot_reply = str(update['message']['bot_reply']);
 
     #https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
-    url = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&text=' + message;
+    url = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&text=' + bot_reply;
 
     dolog.WriteLog(SendMessage.__name__ + ' - ' + url);
 
     #Send Message to the chat
     try:
 
-        response = requests.post(url);
+        response = requests.post(url, timeout=(http_timeout, http_timeout_read));
 
-    except:
+    except requests.exceptions.RequestException as e:
 
-        dolog.WriteLog(SendMessage.__name__ + ' - ' + 'Problems with POST request during Send Message to the chat.');
+        dolog.WriteLog(SendMessage.__name__ + ' - ' + str(e));
 
     else:
 
@@ -48,11 +57,11 @@ def SendMessage(token, update):
 
         try:
 
-            response = requests.post(url);
+            response = requests.post(url, timeout=(http_timeout, http_timeout_read));
 
-        except:
+        except requests.exceptions.RequestException as e:
 
-            dolog.WriteLog(SendMessage.__name__ + ' - ' + 'Problems with POST request Mark Update as resolved.');
+            dolog.WriteLog(SendMessage.__name__ + ' - ' + str(e));
 
         else:
 
@@ -63,45 +72,61 @@ def SendMessage(token, update):
 ### ParseUpdate function. This fucntion unparse values from the GetUpdate response.
 def ParseUpdate(response):
 
-    if (response.status_code == 200):
+    if (response):
 
-        http_code = 200;
+        if (response.status_code == 200):
 
-#        print ("HTTP Code is 200. Good connection..."); # Debug logging to the console.
+    #        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'HTTP Code is 200. Good connection...');
 
-        data = response.json();
+            data = response.json();
 
-        try:
+            try:
 
-            data['result'];
+                data['result'];
 
-        except:
+            except:
 
-            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'No updates. Continue GetUpdates');
+                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'No updates. Continue GetUpdates');
 
-        else:
+            else:
 
 #            print(data);           # Debug logging to the console.
 
-            for update in data['result']:
+                for update in data['result']:
 
-                ParseCommand(update);
+                    ParseCommand(update);
 
-                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(update, indent=2));
+                    dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(update, indent=2));
+
+        else:
+
+            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "HTTP code != 200.");
+
+#            exit(1);
 
     else:
 
-        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "HTTP request hasn't code 200!");
+        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "HTTP request failed.");
 
-        exit(1);
 # ParseUpdate END
 
-### ParseCommand function. This fucntion unparse values from the GetUpdate response.
+### ParseCommand function. This fucntion unparse message from the GetUpdate response
+### and try to get command.
 def ParseCommand(update):
+
+    message_text = str(update['message']['text']);
+
+    if (message_text[:1] == '/'):
+
+        update['message']['bot_reply'] = 'Command: ' + message_text + '-------';
+
+    else:
+
+        update['message']['bot_reply'] = 'Text: ' + message_text + '-------';
 
     dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
 
-    SendMessage(token, update)
+    SendMessage(token, update);
 # ParseUpdate END
 
 ### Main
