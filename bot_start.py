@@ -27,7 +27,7 @@ def GetUpdate(token):
 # GetUpdate END
 
 ### SendMessage function. This fucntion sends data to the chat using TAPI.
-def SendMessage(token, update):
+def SendMessage(update):
 
     chat_id = str(update['message']['chat']['id']);
 
@@ -48,24 +48,8 @@ def SendMessage(token, update):
         dolog.WriteLog(SendMessage.__name__ + ' - ' + str(e));
 
     else:
-
         #Mark Update as resolved
-
-        offset = str(update['update_id'] + 1);
-
-        url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates?offset=' + offset;
-
-        try:
-
-            response = requests.post(url, timeout=(http_timeout, http_timeout_read));
-
-        except requests.exceptions.RequestException as e:
-
-            dolog.WriteLog(SendMessage.__name__ + ' - ' + str(e));
-
-        else:
-
-            return 0;
+        SendResolve(update);
 
 # SendMessage END
 
@@ -75,28 +59,54 @@ def ParseUpdate(response):
     if (response):
 
         if (response.status_code == 200):
-
-    #        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'HTTP Code is 200. Good connection...');
-
+            #dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'HTTP Code is 200. Good connection...');
             data = response.json();
 
-            try:
+            if (data['ok'] == True):
 
-                data['result'];
+                try:
 
-            except:
+                    data['result'];
 
-                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'No updates. Continue GetUpdates');
+                except:
+
+                    dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'Incorrect recieved data');
+
+                else:
+
+    #            print(data);           # Debug logging to the console.
+
+                    for update in data['result']:
+
+                        try:
+
+                            update['message'];
+
+                        except:
+
+                            if (update['edited_message']):
+
+                                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + str(update['edited_message']['chat']['id']) + '<--->' + str(update['edited_message']['text']));
+
+                                #update['message']['chat']['id'] = update['edited_message']['chat']['id'];
+
+                                #update['message']['bot_reply'] = "Edited messages don't support for a while";
+
+                                #SendMessage(update);
+
+                            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "Message " + str(update['edited_message']['chat']['id']) + " block is absent. Looks like it's " + str(update['edited_message']['text']) + " reply. Update will be marked as resolved");
+
+                            SendResolve(update);
+
+                        else:
+
+                            ParseCommand(update);
+
+                            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(update, indent=2));
 
             else:
 
-#            print(data);           # Debug logging to the console.
-
-                for update in data['result']:
-
-                    ParseCommand(update);
-
-                    dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(update, indent=2));
+                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(data, indent=2));
 
         else:
 
@@ -106,12 +116,11 @@ def ParseUpdate(response):
 
     else:
 
-        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "HTTP request failed.");
+        dolog.WriteLog(ParseUpdate.__name__ + ' - ' + str(response) + '  HTTP request failed');
 
 # ParseUpdate END
 
-### ParseCommand function. This fucntion unparse message from the GetUpdate response
-### and try to get command.
+### ParseCommand function. This fucntion unparse message from the GetUpdate response and try to get command.
 def ParseCommand(update):
 
     message_text = str(update['message']['text']);
@@ -126,8 +135,29 @@ def ParseCommand(update):
 
     dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
 
-    SendMessage(token, update);
+    SendMessage(update);
+
 # ParseUpdate END
+
+# SendResolve function marks update (message) as resolved.
+def SendResolve(update):
+
+    offset = str(update['update_id'] + 1);
+
+    url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates?offset=' + offset;
+
+    try:
+
+        response = requests.post(url, timeout=(http_timeout, http_timeout_read));
+
+    except requests.exceptions.RequestException as e:
+
+        dolog.WriteLog(SendMessage.__name__ + ' - Message unresolved: ' + str(e));
+
+    else:
+
+        return 0;
+# SendMessage END
 
 ### Main
 while True:
