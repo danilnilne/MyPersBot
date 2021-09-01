@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 from time import sleep
 
 GPIO.setwarnings(False)
- 
+
 GPIO.setmode(GPIO.BCM)
 
 channels_used = [5, 13, 27]

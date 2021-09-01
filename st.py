@@ -1,5 +1,5 @@
 import subprocess
- 
+
 args = ["speedtest-cli"];
 
 print ("SpeedTest started...");
@@ -13,4 +13,3 @@ print(output);
 print(error);
 
 print ("Exit...");
-
