@@ -1,6 +1,6 @@
 My first exp in Git!
 
-This Project contains some code and scripts created by me during my Program tutoting..
+This Project contains some code and scripts created by me during my Program tutoring..
 
 bot_start.py  - Telegram Bot for diff tasks.
 
