@@ -8,7 +8,7 @@ token = bot_conf.token;
 http_timeout = bot_conf.http_timeout;
 http_timeout_read = bot_conf.http_timeout_read;
 
-### GetUpdate function. This fucntion request updates from TAPI.
+### GetUpdate function. This fucntion requests updates from tAPI.
 def GetUpdate(token):
 
     url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates';
@@ -26,14 +26,14 @@ def GetUpdate(token):
         return response;
 # GetUpdate END
 
-### SendMessage function. This fucntion sends data to the chat using TAPI.
+### SendMessage function. This fucntion sends data to the chat using tAPI.
 def SendMessage(update):
 
     chat_id = str(update['message']['chat']['id']);
 
     bot_reply = str(update['message']['bot_reply']);
 
-    #https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
+          #https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
     url = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&text=' + bot_reply;
 
     dolog.WriteLog(SendMessage.__name__ + ' - ' + url);
@@ -53,7 +53,7 @@ def SendMessage(update):
 
 # SendMessage END
 
-### ParseUpdate function. This fucntion unparse values from the GetUpdate response.
+### ParseUpdate function. This fucntion unparses values from the GetUpdate response.
 def ParseUpdate(response):
 
     if (response):
@@ -120,7 +120,7 @@ def ParseUpdate(response):
 
 # ParseUpdate END
 
-### ParseCommand function. This fucntion unparse message from the GetUpdate response and try to get command.
+### ParseCommand function. This fucntion unparses message from the GetUpdate response and try to get command.
 def ParseCommand(update):
 
     message_text = str(update['message']['text']);

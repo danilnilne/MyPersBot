@@ -1,15 +1,30 @@
-import subprocess
+import subprocess;
+import json;
 
-args = ["speedtest-cli"];
+args = ["speedtest-cli", "--json", "--share"];
 
-print ("SpeedTest started...");
+#print ("SpeedTest started...");
 
-process = subprocess.Popen(args, stdout=subprocess.PIPE);
+try:
 
-output, error = process.communicate();
+    process = subprocess.Popen(args, stdout=subprocess.PIPE)
 
-print(output);
+except subprocess.CalledProcessError as e:
 
-print(error);
+    print("Error with Command");
 
-print ("Exit...");
+else:
+
+    output, error = process.communicate();
+
+    #print(output);
+
+    in_json = output;
+
+    parsed_json = json.loads(in_json);
+
+    print(json.dumps(parsed_json, indent=4, sort_keys=True))
+
+    print(error);
+
+    print ("Exit...");
