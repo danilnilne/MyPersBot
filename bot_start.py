@@ -2,7 +2,8 @@ import time
 import requests;
 import bot_conf;
 import dolog;
-import json
+import json;
+import lib_dk;
 
 token = bot_conf.token;
 http_timeout = bot_conf.http_timeout;
@@ -126,16 +127,38 @@ def ParseCommand(update):
     message_text = str(update['message']['text']);
 
     if (message_text[:1] == '/'):
+        # /speedtest command
+        if (message_text == '/speedtest'):
 
-        update['message']['bot_reply'] = 'Command: ' + message_text + '-------';
+            update['message']['bot_reply'] = 'Starting SpeedTest';
+
+            SendMessage(update);
+
+            output = lib_dk.runShellCommand("speedtest-cli", "--simple");
+
+            update['message']['bot_reply'] = output['stdout'] + '\n' + output['stderr'];
+
+            SendMessage(update);
+
+            dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+
+        else:
+
+            update['message']['bot_reply'] = 'Unexpected command: ' + message_text;
+
+            SendMessage(update);
+
+            dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
 
     else:
 
-        update['message']['bot_reply'] = 'Text: ' + message_text + '-------';
+        update['message']['bot_reply'] = 'Just a text: ' + message_text;
 
-    dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+        SendMessage(update);
 
-    SendMessage(update);
+        dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+
+    #SendMessage(update);
 
 # ParseUpdate END
 
