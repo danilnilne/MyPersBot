@@ -6,14 +6,12 @@ import bot_conf;
 import time;
 
 ### runShellCommand function runs shell command with options and returns
-# output - command' result
-# error - possible errors
+# ret = {'returncode': 0,
+#        'stdout': 'text',
+#        'stderr': 'text'
+#       }
 def runShellCommand (*args):
 
-    # ret = {'returncode': 0,
-    #        'stdout': 'text',
-    #        'stderr': 'text'
-    #       }
     ret = {};
 
     try:
@@ -56,23 +54,60 @@ def dbConnect(**kwargs):
     # my_function(fname = "Tobias", lname = "Refsnes")
     # Connect to MariaDB Platform
 
-    error = "none";
+    # ret = {'returncode': 0,
+    #        'db_connect': 'class',
+    #        'stderr': 'text'
+    #       }
     try:
-        conn = mariadb.connect(
+        db_connect = mariadb.connect(
             user = bot_conf.db_user,
             password = bot_conf.db_password,
             host = bot_conf.db_host,
             port = 3306,
-            database=bot_conf.db_name);
+            database = bot_conf.db_name);
 
-        cur = conn.cursor()
+        ret = {'returncode': 0, 'stdout': db_connect, 'stderr': ''};
 
     except mariadb.Error as e:
 
-        error = "Error connecting to MariaDB Platform: " + str(e);
+        ret = {'returncode': 1, 'stdout': '', 'stderr': str(e)}
 
-        return error;
+        return ret;
 
-    return error, cur;
-
+    return ret;
 ### dbConnect END
+
+### dbOps
+# This function uses ret = {'returncode': X, 'stdout': db_cursor, 'stderr': 'xxxxxx'} from dbConnect(**kwargs)
+# Arguments:
+# input should be KeyWords: 'field_name' = 'filed_value'
+# table_name: Table name where need to INSERT or SELECT
+# ops: INSERT or SELECT or DELETE
+# Examle: # table_name = 'speedtest', ops = 'INSERT', input = content
+def dbOps (**kwargs):
+
+    db_connect = dbConnect()['stdout']
+
+    db_connect.autocommit = False;
+
+    db_cursor = db_connect.cursor();
+    # INSERT - add row to the table with Table table_name and data
+    db_data = (kwargs['input']['ping'], kwargs['input']['download'], kwargs['input']['upload']);
+
+    if (kwargs['ops'] == "INSERT"):
+
+        try:
+
+            db_cursor.execute ("INSERT INTO speedtest (ping,download,upload) VALUES (?, ?, ?);", db_data);
+
+        except mariadb.Error as e:
+
+            return str(e);
+
+    db_connect.commit();
+
+    db_connect.close();
+
+    return "OKey";
+
+### dbOps END

@@ -130,13 +130,13 @@ def ParseCommand(update):
         # /speedtest command
         if (message_text == '/speedtest'):
 
-            update['message']['bot_reply'] = 'Starting SpeedTest';
+            update['message']['bot_reply'] = 'SpeedTest initiated. Waiting for results...';
 
             SendMessage(update);
 
             output = lib_dk.runShellCommand("speedtest-cli", "--simple");
 
-            update['message']['bot_reply'] = output['stdout'] + '\n' + output['stderr'];
+            update['message']['bot_reply'] = output['stdout'] + output['stderr'];
 
             SendMessage(update);
 
