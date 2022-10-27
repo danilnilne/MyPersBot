@@ -1,6 +1,5 @@
 import subprocess;
 import json;
-#import mariadb;
 import sys;
 import bot_conf;
 import time;
@@ -47,62 +46,3 @@ def runShellCommand (*args):
 
     return ret;
 ### runShellCommand END
-
-# Connect to MariaDB
-def dbConnect():
-
-    try:
-        db_connect = mysql.connector.connect(
-            user = bot_conf.db_user,
-            password = bot_conf.db_password,
-            host = bot_conf.db_host,
-            port = bot_conf.db_port,
-            database = bot_conf.db_name)
-
-        ret = {'returncode': 0, 'stdout': db_connect, 'stderr': ''};
-
-    except mysql.connector.Error as e:
-
-        ret = {'returncode': 1, 'stdout': '', 'stderr': str(e)};
-
-        return ret;
-
-    return ret;
-
-### dbOps: Operations with tables, where db_connect is database connection
-
-# This function uses ret from dbConnect() func:
-# {     'returncode': X,
-#       'stdout': db_cursor,
-#       'stderr': 'xxxxxx'
-# }
-# Arguments:
-# input should be KeyWords: 'field_name' = 'filed_value'
-# table_name: Table name where need to INSERT or SELECT
-# ops: INSERT or SELECT or DELETE
-# Examle: # table_name = 'speedtest', ops = 'INSERT', input = content
-def dbOps (**kwargs):
-
-    db_connection_info = dbConnect();
-
-    if db_connection_info['returncode'] == 0:
-
-        db_connect = db_connection_info['stdout']
-        db_connect.autocommit = False;
-        db_cursor = db_connect.cursor();
-
-        db_output = db_cursor.execute("SELECT id, timestamp, description FROM events");
-
-        row = db_output.fetchone();
-        print(*row, sep=' ');
-
-        #return db_output;
-
-    else:
-
-        return db_connection_info['stderr'];
-
-    db_cursor.close();
-    db_connect.commit();
-    db_connect.close();
-### dbOps END
