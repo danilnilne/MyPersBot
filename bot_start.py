@@ -9,7 +9,7 @@ token = bot_conf.token;
 http_timeout = bot_conf.http_timeout;
 http_timeout_read = bot_conf.http_timeout_read;
 
-### GetUpdate function. This fucntion requests updates from tAPI.
+### GetUpdate function. This fucntion requests updates from tAPI Telegram API.
 def GetUpdate(token):
 
     url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates';
