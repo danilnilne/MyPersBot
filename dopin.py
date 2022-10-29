@@ -14,7 +14,7 @@ for channel in channels_used:
 
 	GPIO.output(channel, True)
 
-	sleep(2)
+	sleep(5)
 
 
 for channel in channels_used:
