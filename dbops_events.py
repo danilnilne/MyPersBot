@@ -3,7 +3,7 @@ import datetime
 import bot_conf
 import mysql.connector
 
-event = sys.argv[1]
+
 ### dbConnect: use settings from config and connect t DB. Returns db_cursor
 def dbConnect():
 
@@ -54,7 +54,7 @@ def dbPrintAll():
 ### dbRequest: END
 
 ### dbAdd:
-def dbAdd(event):
+def dbAdd(event=''):
 
     db_data = dbConnect();
 
@@ -83,4 +83,21 @@ def dbAdd(event):
     return ret;
 ### dbAdd: END
 
-dbAdd(event)
+try:
+    sys.argv[1]
+
+    if sys.argv[1] == 'add':
+
+        try:
+
+            sys.argv[2]
+
+            dbAdd(sys.argv[2])
+
+        except:
+
+            dbAdd("Wrong command syntaxes - no sys.argv[2]")
+
+except:
+
+    dbAdd("Wrong command syntaxes - no sys.argv[1]")
