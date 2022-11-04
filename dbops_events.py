@@ -3,7 +3,7 @@ import datetime
 import bot_conf
 import mysql.connector
 
-
+### need to add more functions
 ### dbConnect: use settings from config and connect t DB. Returns db_cursor
 def dbConnect():
 
