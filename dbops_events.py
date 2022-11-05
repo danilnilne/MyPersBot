@@ -3,8 +3,7 @@ import datetime
 import bot_conf
 import mysql.connector
 
-### need to add more functions
-### dbConnect: use settings from config and connect t DB. Returns db_cursor
+### dbConnect: use settings from config and connect to DB. Returns db_cursor
 def dbConnect():
 
     db_config = {
@@ -40,9 +39,11 @@ def dbPrintAll():
 
         db_cursor.execute(query)
 
-        for (id, timestamp, description) in db_cursor:
+        for (id, timestamp, description) in db_cursor :
 
             print("{}\t | {}\t | {}\t ".format(id, timestamp, description))
+
+        ret = 0
 
         db_cursor.close()
 
@@ -50,7 +51,9 @@ def dbPrintAll():
 
     else:
 
-        return db_data["error"]
+        ret = db_data["error"]
+
+    return ret
 ### dbRequest: END
 
 ### dbAdd:
@@ -68,9 +71,10 @@ def dbAdd(event=''):
 
         db_cursor.execute(query, insert_data)
 
-        db_data["db_connect"].commit()
-
+    #ret = db_cursor.lastrowid
         ret = 0
+
+        db_data["db_connect"].commit()
 
         db_cursor.close()
 
@@ -92,12 +96,20 @@ try:
 
             sys.argv[2]
 
-            dbAdd(sys.argv[2])
+            print(dbAdd(sys.argv[2]))
 
         except:
 
-            dbAdd("Wrong command syntaxes - no sys.argv[2]")
+            print("Wrong ADD cmd syntaxes - no sys.argv[2]")
+
+    elif sys.argv[1] == 'print-all':
+
+        print(dbPrintAll())
+
+    else:
+
+        print("Unknown sys.argv[1]")
 
 except:
 
-    dbAdd("Wrong command syntaxes - no sys.argv[1]")
+    print("Wrong command syntaxes - no sys.argv[1]")
