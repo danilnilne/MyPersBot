@@ -87,6 +87,47 @@ def dbAdd(event=''):
     return ret;
 ### dbAdd: END
 
+### dbDel:
+def dbDel(id):
+
+    db_data = dbConnect();
+
+    if db_data["returncode"] == 0:
+
+        db_cursor = db_data["db_connect"].cursor()
+
+        if id != "all":
+
+            query = ("DELETE FROM events WHERE id="+id)
+
+        else:
+
+            query = ("TRUNCATE TABLE events")
+
+        try:
+
+            db_cursor.execute(query)
+
+            ret = 0
+
+        except mysql.connector.Error as error:
+
+            ret = error
+
+        db_data["db_connect"].commit()
+
+        db_cursor.close()
+
+        db_data["db_connect"].close()
+
+    else:
+
+        ret =  db_data["error"];
+
+    return ret;
+### dbDel: END
+
+### Main ###
 try:
     sys.argv[1]
 
@@ -105,6 +146,18 @@ try:
     elif sys.argv[1] == 'print-all':
 
         print(dbPrintAll())
+
+    elif sys.argv[1] == 'del':
+
+        try:
+
+            sys.argv[2]
+
+            print(dbDel(sys.argv[2]))
+
+        except:
+
+            print("Wrong DEL cmd syntaxes - no sys.argv[2]")
 
     else:
 
