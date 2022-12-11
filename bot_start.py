@@ -60,7 +60,7 @@ def ParseUpdate(response):
     if (response):
 
         if (response.status_code == 200):
-            #dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'HTTP Code is 200. Good connection...');
+        
             data = response.json();
 
             if (data['ok'] == True):
@@ -71,11 +71,9 @@ def ParseUpdate(response):
                     
                 except:
                 
-                    dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'Incorrect recieved data');
+                    dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is bad JSON.result');
 
                 else:
-
-    #            print(data);           # Debug logging to the console.
 
                     for update in data['result']:
 
@@ -85,14 +83,7 @@ def ParseUpdate(response):
 
                         except:
                             
-                            dolog.WriteLog(ParseUpdate.__name__ + ' - Unsupported for a While ' + json.dumps(update, indent=2));
-                            
-#                            if (update['edited_message']):    # 2 - KeyError: 'edited_message'
-#                                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + str(update['edited_message']['chat']['id']) + '<--->' + str(update['edited_message']['text']));
-#                                #update['message']['chat']['id'] = update['edited_message']['chat']['id'];
-#                                #update['message']['bot_reply'] = "Edited messages don't support for a while";
-#                                #SendMessage(update);
-#                            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "Message " + str(update['edited_message']['chat']['id']) + " block is absent. Looks like it's " + str(update['edited_message']['text']) + " reply. Update will be marked as resolved");
+                            dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is bad JSON.result[0].message ' + json.dumps(update, indent=2));
 
                             SendResolve(update);
 
@@ -100,17 +91,13 @@ def ParseUpdate(response):
 
                             ParseCommand(update);
 
-                            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(update, indent=2));
-
             else:
 
-                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + json.dumps(data, indent=2));
+                dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is JSON.ok not in True' + json.dumps(data, indent=2));
 
         else:
 
-            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "HTTP code != 200.");
-
-#            exit(1);
+            dolog.WriteLog(ParseUpdate.__name__ + str(response.status_code) + ' - HTTP response code not healthy!');
 
     else:
 
@@ -127,7 +114,7 @@ def ParseCommand(update):
 
     except:
 
-        dolog.WriteLog(ParseCommand.__name__ + ' - Unsupported for a While ' + json.dumps(update, indent=2));
+        dolog.WriteLog(ParseCommand.__name__ + ' - Incorrect recieved data. There is bad JSON.result[].message.text ' + json.dumps(update, indent=2));
 
         SendResolve(update);
 
@@ -167,8 +154,6 @@ def ParseCommand(update):
             SendMessage(update);
 
             dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
-
-            #SendMessage(update);
 
 # ParseUpdate END
 
