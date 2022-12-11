@@ -113,10 +113,22 @@ def ParseCommand(update):
         update['message']['text']
 
     except:
+    
+        try:
 
-        dolog.WriteLog(ParseCommand.__name__ + ' - Incorrect recieved data. There is bad JSON.result[].message.text ' + json.dumps(update, indent=2));
+            update['message']['sticker']   # JSON.result[].message.sticker
+            
+            update['message']['bot_reply'] = 'Stickers are not supported for now!';
 
-        SendResolve(update);
+            SendMessage(update);
+                  
+        except:
+        
+            dolog.WriteLog(ParseCommand.__name__ + ' - Incorrect recieved data. JSON.result[1].message.XXXXXX unknown!' + json.dumps(update, indent=2));
+            
+            update['message']['bot_reply'] = json.dumps(update['message'], indent=2);
+            
+            SendMessage(update);
 
     else:
 
@@ -155,7 +167,7 @@ def ParseCommand(update):
 
             dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
 
-# ParseUpdate END
+# ParseCommand END
 
 # SendResolve function marks update (message) as resolved.
 def SendResolve(update):
@@ -175,7 +187,7 @@ def SendResolve(update):
     else:
 
         return 0;
-# SendMessage END
+# SendResolve END
 
 ### Main
 while True:
