@@ -68,9 +68,9 @@ def ParseUpdate(response):
                 try:
 
                     data['result'];
-
+                    
                 except:
-
+                
                     dolog.WriteLog(ParseUpdate.__name__ + ' - ' + 'Incorrect recieved data');
 
                 else:
@@ -81,21 +81,18 @@ def ParseUpdate(response):
 
                         try:
 
-                            update['message'];
+                            update['message'];     # 1 - KeyError: 'message'. There is no message key with values
 
                         except:
-
-                            if (update['edited_message']):
-
-                                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + str(update['edited_message']['chat']['id']) + '<--->' + str(update['edited_message']['text']));
-
-                                #update['message']['chat']['id'] = update['edited_message']['chat']['id'];
-
-                                #update['message']['bot_reply'] = "Edited messages don't support for a while";
-
-                                #SendMessage(update);
-
-                            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "Message " + str(update['edited_message']['chat']['id']) + " block is absent. Looks like it's " + str(update['edited_message']['text']) + " reply. Update will be marked as resolved");
+                            
+                            dolog.WriteLog(ParseUpdate.__name__ + ' - Unsupported for a While ' + json.dumps(update, indent=2));
+                            
+#                            if (update['edited_message']):    # 2 - KeyError: 'edited_message'
+#                                dolog.WriteLog(ParseUpdate.__name__ + ' - ' + str(update['edited_message']['chat']['id']) + '<--->' + str(update['edited_message']['text']));
+#                                #update['message']['chat']['id'] = update['edited_message']['chat']['id'];
+#                                #update['message']['bot_reply'] = "Edited messages don't support for a while";
+#                                #SendMessage(update);
+#                            dolog.WriteLog(ParseUpdate.__name__ + ' - ' + "Message " + str(update['edited_message']['chat']['id']) + " block is absent. Looks like it's " + str(update['edited_message']['text']) + " reply. Update will be marked as resolved");
 
                             SendResolve(update);
 
@@ -124,41 +121,54 @@ def ParseUpdate(response):
 ### ParseCommand function. This fucntion unparses message from the GetUpdate response and try to get command.
 def ParseCommand(update):
 
-    message_text = str(update['message']['text']);
+    try:
 
-    if (message_text[:1] == '/'):
-        # /speedtest command
-        if (message_text == '/speedtest'):
+        update['message']['text']
 
-            update['message']['bot_reply'] = 'SpeedTest initiated. Waiting for results...';
+    except:
 
-            SendMessage(update);
+        dolog.WriteLog(ParseCommand.__name__ + ' - Unsupported for a While ' + json.dumps(update, indent=2));
 
-            output = lib_dk.runShellCommand("speedtest-cli", "--simple");
-
-            update['message']['bot_reply'] = output['stdout'] + output['stderr'];
-
-            SendMessage(update);
-
-            dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
-
-        else:
-
-            update['message']['bot_reply'] = 'Unexpected command: ' + message_text;
-
-            SendMessage(update);
-
-            dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+        SendResolve(update);
 
     else:
 
-        update['message']['bot_reply'] = 'Just a text: ' + message_text;
+        message_text = str(update['message']['text']);
 
-        SendMessage(update);
+        if (message_text[:1] == '/'):
 
-        dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+            # SpeedTest command
+            if (message_text == '/speedtest'):
 
-    #SendMessage(update);
+                update['message']['bot_reply'] = 'SpeedTest initiated. Waiting for results...';
+
+                SendMessage(update);
+
+                output = lib_dk.runShellCommand("speedtest-cli", "--simple");
+
+                update['message']['bot_reply'] = output['stdout'] + output['stderr'];
+
+                SendMessage(update);
+
+                dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+
+            else:
+
+                update['message']['bot_reply'] = 'Unexpected command: ' + message_text;
+
+                SendMessage(update);
+
+                dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+
+        else:
+
+            update['message']['bot_reply'] = 'Just a text: ' + message_text;
+
+            SendMessage(update);
+
+            dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
+
+            #SendMessage(update);
 
 # ParseUpdate END
 
