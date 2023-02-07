@@ -3,7 +3,7 @@ import requests
 import hashlib
 import bot_conf
 
-
+# Variables
 ip_addr = bot_conf.router_fqdn
 login = bot_conf.login
 passw = bot_conf.passw
