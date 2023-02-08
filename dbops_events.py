@@ -165,4 +165,5 @@ try:
 
 except:
 
-    print("Wrong command syntaxes - no sys.argv[1]")
+    print("Wrong command syntaxes - no sys.argv[1]\n Supports:\n\t print-all \t-print all entries from DB events\n\t add \t\t-Add entry\n\t del \t\t-Delete entry\entries by ID")
+
