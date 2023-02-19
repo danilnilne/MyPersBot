@@ -131,11 +131,11 @@ def dbDel(id):
 
 def helpPrint():
     
-    print('''Wrong command syntaxes - no sys.argv[1]
+    print('''Incorrect command syntax - there is no any args
             Supports:
             --list\t - print all entries from DB events
-            --add\t - add entry. --add <event_message>
-            --del\t - delete entry\entries by ID. --add <ID> to delete single ID or --add all to truncate whole Table "Events" 
+            --add\t - add entry. --add "<event_message>"
+            --del\t - delete entry\entries by ID. Put "<ID>" to delete single ID or "all" to truncate whole Table "Events" 
             ''')
 
 ### helpPrint: END
@@ -154,7 +154,7 @@ try:
 
         except:
 
-            print("Wrong --add cmd syntaxes - no sys.argv[2]")
+            print("Incorrect command syntax. \"--add\" requires second arg")
 
     elif sys.argv[1] == '--list':
 
@@ -170,7 +170,7 @@ try:
 
         except:
 
-            print("Wrong DEL cmd syntaxes - no sys.argv[2]")
+            print("Incorrect command syntax. \"--del\" requires second arg")
 
     else:
 
