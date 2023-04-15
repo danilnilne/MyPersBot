@@ -71,7 +71,6 @@ def dbAdd(event=''):
 
         db_cursor.execute(query, insert_data)
 
-    #ret = db_cursor.lastrowid
         ret = 0
 
         db_data["db_connect"].commit()

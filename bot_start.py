@@ -2,6 +2,7 @@ import time
 import requests;
 import bot_conf;
 import dolog;
+import dbops_events;
 import json;
 import lib_dk;
 
@@ -15,15 +16,10 @@ def GetUpdate(token):
     url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates';
 
     try:
-
         response = requests.get(url, timeout=(http_timeout, http_timeout_read));
-
     except requests.exceptions.RequestException as e:
-
         dolog.WriteLog(GetUpdate.__name__ + ' - ' + str(e));
-
     else:
-
         return response;
 # GetUpdate END
 
@@ -41,13 +37,9 @@ def SendMessage(update):
 
     #Send Message to the chat
     try:
-
         response = requests.post(url, timeout=(http_timeout, http_timeout_read));
-
     except requests.exceptions.RequestException as e:
-
         dolog.WriteLog(SendMessage.__name__ + ' - ' + str(e));
-
     else:
         #Mark Update as resolved
         SendResolve(update);
@@ -58,17 +50,13 @@ def SendMessage(update):
 def ParseUpdate(response):
 
     if (response):
-
-        if (response.status_code == 200):
-        
+        if (response.status_code == 200):  
             data = response.json();
-
+            
             if (data['ok'] == True):
-
+                
                 try:
-
-                    data['result'];
-                    
+                    data['result'];                 
                 except:
                 
                     dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is bad JSON.result');
@@ -79,7 +67,7 @@ def ParseUpdate(response):
 
                         try:
 
-                            update['message'];     # 1 - KeyError: 'message'. There is no message key with values
+                            update['message'];     # 1 - KeyError: 'message'. There is no message key with value
 
                         except:
                             
@@ -93,11 +81,11 @@ def ParseUpdate(response):
 
             else:
 
-                dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is JSON.ok not in True' + json.dumps(data, indent=2));
+                dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is JSON.ok is not True' + json.dumps(data, indent=2));
 
         else:
 
-            dolog.WriteLog(ParseUpdate.__name__ + str(response.status_code) + ' - HTTP response code not healthy!');
+            dolog.WriteLog(ParseUpdate.__name__ + str(response.status_code) + ' - HTTP response code not 200!');
 
     else:
 
@@ -108,14 +96,18 @@ def ParseUpdate(response):
 ### ParseCommand function. This fucntion unparses message from the GetUpdate response and try to get command.
 def ParseCommand(update):
 
+    # Checking Telegram Used ID and username
     try:
-
-        update['message']['text']
-
+        update['message']['from']['id'];
+        db_error = dbops_events.dbAdd(update['message']['from']['id']);
     except:
-    
-        try:
+        update['message']['bot_reply'] = "Cannot parse Telegram ID";
+        SendMessage(update);
 
+    try:
+        update['message']['text']
+    except:
+        try:
             update['message']['sticker']   # JSON.result[].message.sticker
             
             update['message']['bot_reply'] = 'Stickers are not supported for now!';
