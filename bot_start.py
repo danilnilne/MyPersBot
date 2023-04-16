@@ -30,7 +30,6 @@ def SendMessage(update):
 
     bot_reply = str(update['message']['bot_reply']);
 
-          #https://api.telegram.org/bot[BOT_API_KEY]/sendMessage?chat_id=[MY_CHANNEL_NAME]&text=[MY_MESSAGE_TEXT]
     url = 'https://api.telegram.org/bot' + token + '/sendMessage?chat_id=' + chat_id + '&text=' + bot_reply;
 
     dolog.WriteLog(SendMessage.__name__ + ' - ' + url);
@@ -58,39 +57,24 @@ def ParseUpdate(response):
                 try:
                     data['result'];                 
                 except:
-                
                     dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is bad JSON.result');
-
                 else:
 
                     for update in data['result']:
 
                         try:
-
                             update['message'];     # 1 - KeyError: 'message'. There is no message key with value
-
-                        except:
-                            
+                        except:                         
                             dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is bad JSON.result[0].message ' + json.dumps(update, indent=2));
-
                             SendResolve(update);
-
                         else:
-
                             ParseCommand(update);
-
             else:
-
                 dolog.WriteLog(ParseUpdate.__name__ + ' - Incorrect recieved data. There is JSON.ok is not True' + json.dumps(data, indent=2));
-
         else:
-
             dolog.WriteLog(ParseUpdate.__name__ + str(response.status_code) + ' - HTTP response code not 200!');
-
     else:
-
         dolog.WriteLog(ParseUpdate.__name__ + ' - ' + str(response) + '  HTTP request failed');
-
 # ParseUpdate END
 
 ### ParseCommand function. This fucntion unparses message from the GetUpdate response and try to get command.
@@ -98,8 +82,7 @@ def ParseCommand(update):
 
     # Checking Telegram Used ID and username
     try:
-        update['message']['from']['id'];
-        db_error = dbops_events.dbAdd(update['message']['from']['id']);
+        dbops_events.dbAdd(str(update['message']['from']['id'])+ " | " + str(update['message']['text']));
     except:
         update['message']['bot_reply'] = "Cannot parse Telegram ID";
         SendMessage(update);
@@ -109,56 +92,32 @@ def ParseCommand(update):
     except:
         try:
             update['message']['sticker']   # JSON.result[].message.sticker
-            
             update['message']['bot_reply'] = 'Stickers are not supported for now!';
-
             SendMessage(update);
-                  
         except:
-        
             dolog.WriteLog(ParseCommand.__name__ + ' - Incorrect recieved data. JSON.result[1].message.XXXXXX unknown!' + json.dumps(update, indent=2));
-            
             update['message']['bot_reply'] = json.dumps(update['message'], indent=2);
-            
             SendMessage(update);
-
     else:
-
         message_text = str(update['message']['text']);
-
+        
         if (message_text[:1] == '/'):
-
             # SpeedTest command
             if (message_text == '/speedtest'):
-
                 update['message']['bot_reply'] = 'SpeedTest initiated. Waiting for results...';
-
                 SendMessage(update);
-
                 output = lib_dk.runShellCommand("speedtest-cli", "--simple");
-
                 update['message']['bot_reply'] = output['stdout'] + output['stderr'];
-
                 SendMessage(update);
-
                 dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
-
             else:
-
                 update['message']['bot_reply'] = 'Unexpected command: ' + message_text;
-
                 SendMessage(update);
-
                 dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
-
         else:
-
             update['message']['bot_reply'] = 'Just a text: ' + message_text;
-
             SendMessage(update);
-
             dolog.WriteLog(ParseCommand.__name__ + ' - ' + json.dumps(update, indent=2));
-
 # ParseCommand END
 
 # SendResolve function marks update (message) as resolved.
@@ -169,25 +128,16 @@ def SendResolve(update):
     url = 'https://api.telegram.org/bot' + token + '/' + 'getUpdates?offset=' + offset;
 
     try:
-
         response = requests.post(url, timeout=(http_timeout, http_timeout_read));
-
     except requests.exceptions.RequestException as e:
-
         dolog.WriteLog(SendMessage.__name__ + ' - Message unresolved: ' + str(e));
-
     else:
-
         return 0;
 # SendResolve END
 
 ### Main
 while True:
-
     response = GetUpdate(token);
-
     ParseUpdate(response);
-
     time.sleep(3);
-
 # Main END
