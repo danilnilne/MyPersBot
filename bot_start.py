@@ -2,7 +2,6 @@ import time
 import requests;
 import bot_conf;
 import dolog;
-import dbops_events;
 import json;
 import lib_dk;
 
@@ -80,18 +79,11 @@ def ParseUpdate(response):
 ### ParseCommand function. This fucntion unparses message from the GetUpdate response and try to get command.
 def ParseCommand(update):
 
-    # Checking Telegram Used ID and username
-    try:
-        dbops_events.dbAdd(str(update['message']['from']['id'])+ " | " + str(update['message']['text']));
-    except:
-        update['message']['bot_reply'] = "Cannot parse Telegram ID";
-        SendMessage(update);
-
     try:
         update['message']['text']
     except:
         try:
-            update['message']['sticker']   # JSON.result[].message.sticker
+            update['message']['sticker']
             update['message']['bot_reply'] = 'Stickers are not supported for now!';
             SendMessage(update);
         except:
