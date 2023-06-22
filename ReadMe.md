@@ -1,3 +1,3 @@
 MyPersBot
 
-Python-based Telegram Bot which uses native TG API
+Python-based Telegram Bot which uses native Telegram API
