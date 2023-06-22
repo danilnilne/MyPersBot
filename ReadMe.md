@@ -4,6 +4,7 @@ Python-based Telegram Bot which uses native Telegram API
 
 Preparetions
 You have to create a config file **bot_conf.py** in the same directory where will be located script:
+
 <BEGIN>
 // TG token - DO NOT share this info
 token = '<token without 'bot'>';
